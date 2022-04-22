@@ -1,13 +1,13 @@
-//! tests/health_check.rs 
+// ! tests/health_check.rs
 use std::net::TcpListener;
-
+use newsletterAPI::startup::run;
 
 fn spawn_app() -> String {
     let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind random port");
     
     // Retrieve the port assigned to use by the OS
     let port = listener.local_addr().unwrap().port();
-    let server = newsletterAPI::run(listener).expect("Failed to bind address");
+    let server = run(listener).expect("Failed to bind address");
 
     // Use tokio spawn to run the server in the background
     let _ = tokio::spawn(server);
@@ -42,7 +42,7 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
     // Act
     let body = "name=james%20baldwin&email=baldwin%40gmail.com";
     let response = client
-        .post(&format!("{}/subscription", &app_address))
+        .post(&format!("{}/subscriptions", &app_address))
         .header("Content-Type", "application/x-www-form-urlencoded")
         .body(body)
         .send()
@@ -67,7 +67,7 @@ async fn subscribe_returns_a_400_when_data_is_missing() {
     for (invalid_body, error_message) in test_cases {
         // Act
         let response = client
-            .post(&format!("{}/subscription", &app_address))
+            .post(&format!("{}/subscriptions", &app_address))
             .header("Content-Type", "application/x-www-form-urlencoded")
             .body(invalid_body)
             .send()
