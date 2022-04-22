@@ -1,6 +1,6 @@
 //! src/main.rs
-use newsletterAPI::run;
 use std::net::TcpListener;
+use newsletterAPI::startup::run;
 
 
 #[tokio::main]
