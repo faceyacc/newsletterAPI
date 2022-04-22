@@ -1,12 +1,17 @@
 //! src/main.rs
 use std::net::TcpListener;
 use newsletterAPI::startup::run;
+use newsletterAPI::configuration::get_configuration;
 
 
 #[tokio::main]
 async fn main() -> std::io::Result<()> {
-    // Using the 0 port
-    let listener = TcpListener::bind("0.0.0.0:0").expect("Failed to bind random port");
+    // Panic if it can't read configuration
+    let configuration = get_configuration().expect("Failed to read configuration.");
     
-    run(listener)?.await 
+    // Port comes from settings
+    let address = format!("127.0.0.1:{}", configuration.application_port);
+    let listener = TcpListener::bind(address)?;
+
+    run(listener)?.await
 }
