@@ -15,7 +15,7 @@ pub struct DatabaseSettings {
     pub database_name: String,
 }
 
-
+// Returns <Settings -> DatabaseSettings -> connection_string(), Err>
 pub fn get_configuration() -> Result<Settings, config::ConfigError> {
     // Init the configuration reader
     let mut settings = config::Config::default();

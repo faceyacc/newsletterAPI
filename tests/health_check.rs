@@ -1,22 +1,38 @@
 // ! tests/health_check.rs
 use sqlx::{PgConnection, Connection};
 use newsletterAPI::configuration::get_configuration;
-
 use std::net::TcpListener;
 use newsletterAPI::startup::run;
+use sqlx::PgPool;
+
+pub struct TestApp {
+    pub address: String,
+    pub db_pool: PgPool,
+}
+
+
+
 
 fn spawn_app() -> String {
     let listener = TcpListener::bind("127.0.0.1:0").expect("Failed to bind random port");
     
     // Retrieve the port assigned to use by the OS
     let port = listener.local_addr().unwrap().port();
-    let server = run(listener).expect("Failed to bind address");
+    let address = format!("http://127.0.0.1:{}", port);
+
+    let configuration = get_configuration().expect("Failed to read configuration");
+    let connection_pool = PgPool::connect(&configuration.database.connection_string())
+        .await
+        .expect("Failed to connect to Postgres");
+
+    let server = run(listener, connection_pool.clone()).expect("Failed to bind address");
 
     // Use tokio spawn to run the server in the background
     let _ = tokio::spawn(server);
-
-    // Return the application address to the caller
-    format!("http://127.0.0.1:{}", port)
+    TestApp {
+        address,
+        db_pool: connection_pool
+    }
 }
 
 #[tokio::test]
@@ -45,7 +61,7 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
 
     let mut connection = PgConnection::connect(&connection_string)
         .await
-        .expect("Failed to connect to Postgres. ");
+        .expect("Failed to connect to Postgres.");
     let client = reqwest::Client::new();
 
 
