@@ -6,8 +6,6 @@ use chrono::Utc;
 use uuid::Uuid;
 
 
-
-
 #[derive(serde::Deserialize)]
 pub struct FormData {
     email: String,
