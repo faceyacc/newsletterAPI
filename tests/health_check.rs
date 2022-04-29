@@ -30,6 +30,7 @@ async fn spawn_app() -> TestApp {
     }
 }
 
+
 pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
     // Create database
     let mut connection = PgConnection::connect(&config.connection_string_without_db())
@@ -69,6 +70,7 @@ async fn health_check_works() {
     assert_eq!(Some(0), response.content_length());
 }
 
+
 #[tokio::test]
 async fn subscribe_returns_a_200_for_valid_form_data() {
     // Arrange
@@ -97,6 +99,7 @@ async fn subscribe_returns_a_200_for_valid_form_data() {
     assert_eq!(saved.email, "baldwin_jame@gmail.com");
     assert_eq!(saved.name, "james baldwin");
 }
+
 
 #[tokio::test]
 async fn subscribe_returns_a_400_when_data_is_missing() {
